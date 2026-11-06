@@ -1,0 +1,91 @@
+name: Build Graf for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'Graf-Desktop-v1.0.0-source.zip'
+      - 'graf-desktop-source.zip'
+      - 'graf-desktop/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/build-windows.yml'
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Locate Graf Desktop source
+        id: source
+        shell: pwsh
+        run: |
+          if (Test-Path "package.json") {
+            "project_dir=." >> $env:GITHUB_OUTPUT
+          } elseif (Test-Path "graf-desktop/package.json") {
+            "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
+          } elseif (Test-Path "Graf-Desktop-v1.0.0-source.zip") {
+            Expand-Archive -Path "Graf-Desktop-v1.0.0-source.zip" -DestinationPath "."
+            if (Test-Path "graf-desktop/package.json") {
+              "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
+            } else {
+              throw "ZIP extracted, but graf-desktop/package.json was not found."
+            }
+          } elseif (Test-Path "graf-desktop-source.zip") {
+            Expand-Archive -Path "graf-desktop-source.zip" -DestinationPath "."
+            if (Test-Path "graf-desktop/package.json") {
+              "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
+            } elseif (Test-Path "package.json") {
+              "project_dir=." >> $env:GITHUB_OUTPUT
+            } else {
+              throw "ZIP extracted, but package.json was not found."
+            }
+          } else {
+            throw "Graf Desktop source is missing. Upload Graf-Desktop-v1.0.0-source.zip to the repository root first."
+          }
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: ${{ steps.source.outputs.project_dir }}
+        shell: pwsh
+        run: npm install --no-audit --no-fund
+
+      - name: Run syntax checks
+        working-directory: ${{ steps.source.outputs.project_dir }}
+        run: npm run check
+
+      - name: Run tests
+        working-directory: ${{ steps.source.outputs.project_dir }}
+        run: npm test
+
+      - name: Build Windows x64 installer
+        working-directory: ${{ steps.source.outputs.project_dir }}
+        run: npm run build:win
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Graf-Windows-x64
+          path: ${{ steps.source.outputs.project_dir }}/release/*.exe
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Publish installer to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.source.outputs.project_dir }}/release/*.exe
+          generate_release_notes: true
