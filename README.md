@@ -31,7 +31,7 @@ The workflow runs on a Windows runner and:
 - Builds the x64 NSIS installer.
 - Uploads `Graf-Setup-1.0.0-x64.exe` as the `Graf-Windows-x64` Actions artifact for 30 days.
 
-Open the [Actions tab](../../actions) and select the latest successful **Build Graf for Windows** run. Download the `Graf-Windows-x64` artifact from the run's Artifacts section.
+Open the [Actions tab](https://github.com/SinghGurjot01-Code/Graf/actions) and select the latest successful **Build Graf for Windows** run. Download the `Graf-Windows-x64` artifact from the run's Artifacts section.
 
 ### 3. Publish a Release (optional)
 
