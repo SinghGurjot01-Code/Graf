@@ -5,6 +5,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'Graf-Desktop-v1.0.1-source.zip'
       - 'Graf-Desktop-v1.0.0-source.zip'
       - 'graf-desktop-source.zip'
       - 'graf-desktop/**'
@@ -38,17 +39,21 @@ jobs:
             $ProjectDir = "."
           } elseif (Test-Path "graf-desktop/package.json") {
             $ProjectDir = "graf-desktop"
-          } elseif (Test-Path "Graf-Desktop-v1.0.0-source.zip") {
-            Expand-Archive -Path "Graf-Desktop-v1.0.0-source.zip" -DestinationPath "."
-            if (Test-Path "graf-desktop/package.json") {
-              $ProjectDir = "graf-desktop"
-            }
-          } elseif (Test-Path "graf-desktop-source.zip") {
-            Expand-Archive -Path "graf-desktop-source.zip" -DestinationPath "."
-            if (Test-Path "graf-desktop/package.json") {
-              $ProjectDir = "graf-desktop"
-            } elseif (Test-Path "package.json") {
-              $ProjectDir = "."
+          } else {
+            $ZipCandidates = @(
+              "Graf-Desktop-v1.0.1-source.zip",
+              "Graf-Desktop-v1.0.0-source.zip",
+              "graf-desktop-source.zip"
+            )
+            $ZipFile = $ZipCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+
+            if ($ZipFile) {
+              Expand-Archive -Path $ZipFile -DestinationPath "."
+              if (Test-Path "graf-desktop/package.json") {
+                $ProjectDir = "graf-desktop"
+              } elseif (Test-Path "package.json") {
+                $ProjectDir = "."
+              }
             }
           }
 
@@ -56,7 +61,7 @@ jobs:
             "source_present=false" >> $env:GITHUB_OUTPUT
             "## Graf Desktop build skipped" >> $env:GITHUB_STEP_SUMMARY
             "" >> $env:GITHUB_STEP_SUMMARY
-            "The repository does not contain Graf Desktop source. Upload `Graf-Desktop-v1.0.0-source.zip` to the repository root, or commit the extracted `graf-desktop/` folder, then push to `main`." >> $env:GITHUB_STEP_SUMMARY
+            "The repository does not contain Graf Desktop source. Upload `Graf-Desktop-v1.0.1-source.zip` to the repository root, or commit the extracted `graf-desktop/` folder, then push to `main`." >> $env:GITHUB_STEP_SUMMARY
             Write-Host "::notice::No Graf Desktop source found. Build steps were skipped."
           } else {
             "source_present=true" >> $env:GITHUB_OUTPUT
