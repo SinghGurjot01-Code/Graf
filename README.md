@@ -8,17 +8,15 @@ The Windows build workflow is configured at [`.github/workflows/build-windows.ym
 
 ### 1. Add the Graf Desktop source
 
-The repository must contain the Graf Desktop application source. Upload the file named:
+Upload this file to the **repository root** (the same level as this README):
 
-`Graf-Desktop-v1.0.0-source.zip`
+`Graf-Desktop-v1.0.1-source.zip`
 
-to the **repository root** (the same level as this README), then commit it to `main`.
-
-The archive must contain this path:
+The archive contains the project under:
 
 `graf-desktop/package.json`
 
-Alternatively, extract the archive locally and upload the entire `graf-desktop/` folder to the repository root. Do not upload only the nested `src/` folder.
+Alternatively, extract the archive locally and upload the complete `graf-desktop/` folder to the repository root. Do not upload only the nested `src/` folder.
 
 ### 2. Let GitHub build it
 
@@ -29,7 +27,7 @@ The workflow runs on a Windows runner and:
 - Runs JavaScript syntax checks.
 - Runs the Node test suite serially to avoid Windows file-lock races.
 - Builds the x64 NSIS installer.
-- Uploads `Graf-Setup-1.0.0-x64.exe` as the `Graf-Windows-x64` Actions artifact for 30 days.
+- Uploads `Graf-Setup-1.0.1-x64.exe` as the `Graf-Windows-x64` Actions artifact for 30 days.
 
 Open the [Actions tab](https://github.com/SinghGurjot01-Code/Graf/actions) and select the latest successful **Build Graf for Windows** run. Download the `Graf-Windows-x64` artifact from the run's Artifacts section.
 
@@ -39,5 +37,4 @@ When the workflow is run for a published Git tag/release, it also attaches the E
 
 ### If the build says source is missing
 
-The workflow now reports this as a skipped build with a notice instead of a failed test run. This means the source ZIP or extracted folder has not reached the repository yet. Upload it using step 1.
-
+The workflow reports this as a skipped build with a notice instead of a misleading test failure. Upload `Graf-Desktop-v1.0.1-source.zip` using step 1, then commit it to `main`.
