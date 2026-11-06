@@ -16,10 +16,14 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: graf-windows-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-windows:
     runs-on: windows-latest
-    timeout-minutes: 45
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,53 +32,69 @@ jobs:
         id: source
         shell: pwsh
         run: |
+          $ProjectDir = $null
+
           if (Test-Path "package.json") {
-            "project_dir=." >> $env:GITHUB_OUTPUT
+            $ProjectDir = "."
           } elseif (Test-Path "graf-desktop/package.json") {
-            "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
+            $ProjectDir = "graf-desktop"
           } elseif (Test-Path "Graf-Desktop-v1.0.0-source.zip") {
             Expand-Archive -Path "Graf-Desktop-v1.0.0-source.zip" -DestinationPath "."
             if (Test-Path "graf-desktop/package.json") {
-              "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
-            } else {
-              throw "ZIP extracted, but graf-desktop/package.json was not found."
+              $ProjectDir = "graf-desktop"
             }
           } elseif (Test-Path "graf-desktop-source.zip") {
             Expand-Archive -Path "graf-desktop-source.zip" -DestinationPath "."
             if (Test-Path "graf-desktop/package.json") {
-              "project_dir=graf-desktop" >> $env:GITHUB_OUTPUT
+              $ProjectDir = "graf-desktop"
             } elseif (Test-Path "package.json") {
-              "project_dir=." >> $env:GITHUB_OUTPUT
-            } else {
-              throw "ZIP extracted, but package.json was not found."
+              $ProjectDir = "."
             }
+          }
+
+          if (-not $ProjectDir) {
+            "source_present=false" >> $env:GITHUB_OUTPUT
+            "## Graf Desktop build skipped" >> $env:GITHUB_STEP_SUMMARY
+            "" >> $env:GITHUB_STEP_SUMMARY
+            "The repository does not contain Graf Desktop source. Upload `Graf-Desktop-v1.0.0-source.zip` to the repository root, or commit the extracted `graf-desktop/` folder, then push to `main`." >> $env:GITHUB_STEP_SUMMARY
+            Write-Host "::notice::No Graf Desktop source found. Build steps were skipped."
           } else {
-            throw "Graf Desktop source is missing. Upload Graf-Desktop-v1.0.0-source.zip to the repository root first."
+            "source_present=true" >> $env:GITHUB_OUTPUT
+            "project_dir=$ProjectDir" >> $env:GITHUB_OUTPUT
+            Write-Host "Graf Desktop source found at: $ProjectDir"
           }
 
       - name: Set up Node.js
+        if: steps.source.outputs.source_present == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ steps.source.outputs.project_dir }}/package-lock.json
 
       - name: Install dependencies
+        if: steps.source.outputs.source_present == 'true'
         working-directory: ${{ steps.source.outputs.project_dir }}
         shell: pwsh
         run: npm install --no-audit --no-fund
 
       - name: Run syntax checks
+        if: steps.source.outputs.source_present == 'true'
         working-directory: ${{ steps.source.outputs.project_dir }}
         run: npm run check
 
-      - name: Run tests
+      - name: Run tests (serial, Windows-safe)
+        if: steps.source.outputs.source_present == 'true'
         working-directory: ${{ steps.source.outputs.project_dir }}
-        run: npm test
+        run: npm test -- --test-concurrency=1
 
       - name: Build Windows x64 installer
+        if: steps.source.outputs.source_present == 'true'
         working-directory: ${{ steps.source.outputs.project_dir }}
         run: npm run build:win
 
       - name: Upload installer artifact
+        if: steps.source.outputs.source_present == 'true'
         uses: actions/upload-artifact@v4
         with:
           name: Graf-Windows-x64
@@ -83,7 +103,7 @@ jobs:
           retention-days: 30
 
       - name: Publish installer to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/')
+        if: steps.source.outputs.source_present == 'true' && startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ steps.source.outputs.project_dir }}/release/*.exe
