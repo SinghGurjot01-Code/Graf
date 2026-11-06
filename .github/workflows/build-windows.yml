@@ -69,8 +69,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 24
-          cache: npm
-          cache-dependency-path: ${{ steps.source.outputs.project_dir }}/package-lock.json
 
       - name: Install dependencies
         if: steps.source.outputs.source_present == 'true'
