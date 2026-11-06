@@ -10,7 +10,6 @@ on:
       - 'graf-desktop/**'
       - 'package.json'
       - 'package-lock.json'
-      - '.github/workflows/build-windows.yml'
   release:
     types: [published]
 
