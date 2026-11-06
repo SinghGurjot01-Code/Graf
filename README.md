@@ -2,27 +2,42 @@
 
 Graf is a local-first project intelligence layer for AI coding agents.
 
-## Build the Windows desktop installer with GitHub Actions
+## Build the Windows desktop installer
 
-The repository was empty when the workflow was added, so the workflow is ready but the application source still needs to be uploaded once.
+The Windows build workflow is configured at [`.github/workflows/build-windows.yml`](.github/workflows/build-windows.yml).
 
-1. Download the [Graf Desktop source ZIP](https://github.com/SinghGurjot01-Code/Graf/releases) from the conversation attachment or use the ZIP created for this project.
-2. Open this repository on GitHub and choose **Add file → Upload files**.
-3. Upload **Graf-Desktop-v1.0.0-source.zip** to the repository root and commit it to `main`.
-4. GitHub Actions will run automatically. Open the **Actions** tab, select **Build Graf for Windows**, and wait for the job to finish.
-5. Open the successful run and download the **Graf-Windows-x64** artifact. It contains `Graf-Setup-1.0.0-x64.exe`.
+### 1. Add the Graf Desktop source
 
-You can also upload the extracted `graf-desktop/` folder contents to the repository root instead of uploading the ZIP. The workflow recognizes either layout.
+The repository must contain the Graf Desktop application source. Upload the file named:
 
-### What the workflow does
+`Graf-Desktop-v1.0.0-source.zip`
 
-- Runs on GitHub's Windows runner.
-- Installs Node.js 22 and project dependencies.
-- Runs `npm run check` and `npm test`.
-- Builds the x64 NSIS installer with `npm run build:win`.
-- Uploads the installer as a 30-day Actions artifact.
-- When you publish a Git tag/release (for example `v1.0.0`), attaches the installer to the GitHub Release.
+to the **repository root** (the same level as this README), then commit it to `main`.
 
-The workflow is at [`.github/workflows/build-windows.yml`](.github/workflows/build-windows.yml).
+The archive must contain this path:
 
-**Important:** the first workflow commit only adds the build automation. The installer cannot be built until the Graf Desktop source ZIP or extracted source folder is committed to the repository.
+`graf-desktop/package.json`
+
+Alternatively, extract the archive locally and upload the entire `graf-desktop/` folder to the repository root. Do not upload only the nested `src/` folder.
+
+### 2. Let GitHub build it
+
+A push containing the source ZIP or the extracted `graf-desktop/` folder automatically starts **Build Graf for Windows**.
+
+The workflow runs on a Windows runner and:
+- Installs Node.js 24 and dependencies.
+- Runs JavaScript syntax checks.
+- Runs the Node test suite serially to avoid Windows file-lock races.
+- Builds the x64 NSIS installer.
+- Uploads `Graf-Setup-1.0.0-x64.exe` as the `Graf-Windows-x64` Actions artifact for 30 days.
+
+Open the [Actions tab](../../actions) and select the latest successful **Build Graf for Windows** run. Download the `Graf-Windows-x64` artifact from the run's Artifacts section.
+
+### 3. Publish a Release (optional)
+
+When the workflow is run for a published Git tag/release, it also attaches the EXE to the GitHub Release.
+
+### If the build says source is missing
+
+The workflow now reports this as a skipped build with a notice instead of a failed test run. This means the source ZIP or extracted folder has not reached the repository yet. Upload it using step 1.
+
