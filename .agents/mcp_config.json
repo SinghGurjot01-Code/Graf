@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "graf": {
+      "command": "C:\\Users\\Gurjotpal Singh\\AppData\\Local\\Programs\\Graf\\resources\\runtime\\node.exe",
+      "args": [
+        "C:\\Users\\Gurjotpal Singh\\AppData\\Local\\Programs\\Graf\\resources\\core\\bin\\graf.js",
+        "serve",
+        "--root",
+        "C:\\Users\\Gurjotpal Singh\\Desktop\\graf-desktop"
+      ],
+      "cwd": "C:\\Users\\Gurjotpal Singh\\Desktop\\graf-desktop"
+    }
+  }
+}

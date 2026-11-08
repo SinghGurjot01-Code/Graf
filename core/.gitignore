@@ -1,0 +1,4 @@
+node_modules/
+.graf/
+*.vsix
+.DS_Store

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self' data:;">
+  <meta name="color-scheme" content="dark">
+  <title>Graf</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./vendor/cytoscape.min.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-row">
+        <img class="brand-mark" src="../../assets/brand/Logo.png" alt="">
+        <div class="brand-word">GRAF<span>DESKTOP</span></div>
+        <button class="icon-button sidebar-collapse" id="sidebarCollapse" type="button" title="Collapse sidebar (Ctrl B)" aria-label="Collapse sidebar"></button>
+      </div>
+
+      <button class="project-switcher" id="projectSwitcher" type="button" aria-haspopup="true" aria-expanded="false">
+        <span class="project-avatar" id="projectAvatar">G</span>
+        <span class="project-switch-copy"><strong id="activeProjectName">No project selected</strong><small id="activeProjectPath">Choose a local repository</small></span>
+        <span class="chevron" id="projectChevron"></span>
+      </button>
+      <div class="project-popover hidden" id="projectPopover" role="menu">
+        <div class="popover-title">Your projects</div>
+        <div id="projectList"></div>
+        <button class="popover-action" id="addProjectFromPopover" type="button"></button>
+      </div>
+
+      <nav class="nav-scroll" id="nav" aria-label="Workspace"></nav>
+
+      <div class="sidebar-bottom">
+        <div class="engine-state"><span class="status-dot" id="engineDot"></span><span class="engine-text" id="engineStateText">Engine ready</span><span class="engine-version">core 0.2.4</span></div>
+        <div class="sidebar-footer"><span id="footerLock"></span><span class="sf-text">Local-first. Your code stays here.</span></div>
+      </div>
+    </aside>
+
+    <main class="main-column">
+      <header class="topbar">
+        <div class="breadcrumbs"><span class="crumb-root">Workspace</span><span class="crumb-slash">/</span><strong id="breadcrumbCurrent">Overview</strong></div>
+        <div class="top-actions">
+          <button class="search-trigger" id="searchTrigger" type="button" aria-label="Search or jump to"><span id="searchTriggerIcon"></span><span class="st-text">Search files, symbols, memories…</span><kbd>Ctrl K</kbd></button>
+          <button class="icon-button bordered" id="quickSync" type="button" title="Synchronize project" aria-label="Synchronize project"></button>
+          <button class="top-avatar" id="aboutButton" type="button" title="About Graf" aria-label="About Graf"><img src="../../assets/brand/Logo.png" alt=""></button>
+        </div>
+      </header>
+      <section class="workspace" id="workspace">
+        <div class="welcome-state" id="welcomeState"></div>
+        <div id="pageContent" class="page-content hidden"></div>
+      </section>
+      <footer class="statusbar">
+        <div class="status-left"><span class="status-item"><span class="status-dot" id="syncDot"></span><span id="syncLabel">No project open</span></span><span class="status-divider"></span><span class="status-item" id="branchItem"><span id="branchIcon"></span><span id="branchLabel">No branch</span></span></div>
+        <div class="status-right"><span id="fileCountLabel">0 files</span><span class="status-divider"></span><span id="nodeCountLabel">0 nodes</span><span class="status-divider"></span><span id="edgeCountLabel">0 edges</span></div>
+      </footer>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite" aria-atomic="false"></div>
+
+  <dialog class="modal" id="globalModal" aria-labelledby="modalTitle"><form method="dialog"><div class="modal-head"><div><div class="eyebrow" id="modalEyebrow">GRAF</div><h2 id="modalTitle">Dialog</h2></div><button type="button" class="icon-button" data-action="modal-cancel" aria-label="Close dialog"></button></div><div class="modal-body" id="modalBody"></div><div class="modal-actions" id="modalActions"></div></form></dialog>
+
+  <dialog class="palette" id="palette" aria-label="Command palette">
+    <div class="palette-input"><span id="paletteIcon"></span><input id="paletteInput" type="text" placeholder="Jump to a page, run an action, or search the graph…" autocomplete="off" spellcheck="false" aria-label="Command palette"><kbd>Esc</kbd></div>
+    <div class="palette-list" id="paletteList" role="listbox"></div>
+    <div class="palette-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>Esc</kbd> close</span></div>
+  </dialog>
+</body>
+</html>

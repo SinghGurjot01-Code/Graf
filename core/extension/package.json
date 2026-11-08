@@ -1,0 +1,104 @@
+{
+  "name": "graf-project-graph",
+  "displayName": "Graf Project Graph",
+  "description": "Explore the local Graf codebase graph from VS Code.",
+  "version": "0.2.4",
+  "publisher": "graf-local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "workspaceContains:.graf/graph.json",
+    "onCommand:graf.refresh",
+    "onCommand:graf.openOverview",
+    "onCommand:graf.addNote",
+    "onCommand:graf.snapshot",
+    "onCommand:graf.openHistory",
+    "onCommand:graf.connectMcp"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "graf.refresh",
+        "title": "Graf: Refresh Graph"
+      },
+      {
+        "command": "graf.openOverview",
+        "title": "Graf: Open Overview"
+      },
+      {
+        "command": "graf.openGraph",
+        "title": "Graf: Open Graph View"
+      },
+      {
+        "command": "graf.addNote",
+        "title": "Graf: Add Note to Selected Node"
+      },
+      {
+        "command": "graf.snapshot",
+        "title": "Graf: Create Snapshot"
+      },
+      {
+        "command": "graf.openSource",
+        "title": "Graf: Open Source"
+      },
+      {
+        "command": "graf.showImpact",
+        "title": "Graf: Show Impact"
+      },
+      {
+        "command": "graf.pinNode",
+        "title": "Graf: Pin Selected Node"
+      },
+      {
+        "command": "graf.openHistory",
+        "title": "Graf: Open History"
+      },
+      {
+        "command": "graf.connectMcp",
+        "title": "Graf: Configure MCP for This Workspace"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "grafExplorer",
+          "name": "Graf"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Graf",
+      "properties": {
+        "graf.cliPath": {
+          "type": "string",
+          "default": "graf",
+          "description": "Path to the Graf CLI executable."
+        }
+      }
+    },
+    "menus": {
+      "view/item/context": [
+        {
+          "command": "graf.addNote",
+          "when": "view == grafExplorer && viewItem == grafSymbol",
+          "group": "graf@1"
+        },
+        {
+          "command": "graf.pinNode",
+          "when": "view == grafExplorer && viewItem == grafSymbol",
+          "group": "graf@2"
+        },
+        {
+          "command": "graf.showImpact",
+          "when": "view == grafExplorer && viewItem == grafSymbol",
+          "group": "graf@3"
+        }
+      ]
+    }
+  }
+}

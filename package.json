@@ -1,0 +1,92 @@
+{
+  "name": "graf-desktop",
+  "version": "1.0.3",
+  "private": true,
+  "description": "Graf Desktop 1.0 - local-first codebase intelligence workspace",
+  "type": "module",
+  "main": "src/main/main.js",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "prepare:vendor": "node scripts/copy-vendor.js",
+    "dev": "npm run prepare:vendor && electron .",
+    "start": "npm run dev",
+    "check": "node --check src/main/main.js && node --check src/main/preload.cjs && node --check src/main/workspace-manager.js && node --check src/main/integration-manager.js && node --check src/main/antigravity-commands.js && node --check src/main/ipc.js && node --check src/renderer/app.js && node --check src/renderer/icons.js && node --check src/renderer/highlight.js && node --check core/bin/graf.js && node --check core/src/engine.js && node --check core/src/parser/index.js && node --check core/src/store/db.js && node --check core/src/mcp/server.js && node --check src/renderer/graph-helpers.js && node --check src/renderer/tree-helpers.js && node --check core/src/insights.js",
+    "test": "node --test",
+    "build:win": "npm run prepare:vendor && npm run prepare:runtime && electron-builder --win nsis --x64",
+    "prepare:runtime": "node scripts/copy-runtime.js",
+    "dist:dir": "npm run prepare:vendor && npm run prepare:runtime && electron-builder --dir --win --x64",
+    "qa:e2e": "npm run prepare:vendor && node scripts/qa/e2e.mjs"
+  },
+  "dependencies": {
+    "cytoscape": "3.34.4"
+  },
+  "devDependencies": {
+    "electron": "45.2.3",
+    "electron-builder": "26.18.0",
+    "node": "24.22.2"
+  },
+  "build": {
+    "appId": "com.graf.desktop",
+    "productName": "Graf",
+    "asar": true,
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "core/src/**/*",
+      "core/bin/**/*",
+      "core/package.json",
+      "src/**/*",
+      "assets/**/*",
+      "package.json",
+      "!src/renderer/vendor/.gitkeep"
+    ],
+    "extraResources": [
+      {
+        "from": "core",
+        "to": "core",
+        "filter": [
+          "**/*",
+          "!**/.graf/**",
+          "!**/node_modules/**",
+          "!**/*.vsix"
+        ]
+      },
+      {
+        "from": "runtime/win-x64",
+        "to": "runtime",
+        "filter": [
+          "node.exe"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/brand/graf.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Graf",
+      "deleteAppDataOnUninstall": false,
+      "differentialPackage": true
+    },
+    "artifactName": "Graf-Setup-${version}-${arch}.${ext}"
+  },
+  "allowScripts": [
+    "electron",
+    "node"
+  ]
+}

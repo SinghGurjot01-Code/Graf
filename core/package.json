@@ -1,0 +1,38 @@
+{
+  "name": "graf-project-graph",
+  "version": "0.2.4",
+  "description": "A local-first, editable, versioned project graph for MCP clients.",
+  "type": "module",
+  "bin": {
+    "graf": "bin/graf.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check bin/graf.js && node --check src/engine.js && node --check src/parser/index.js && node --check src/store/db.js && node --check src/mcp/server.js && node --check extension/extension.js",
+    "start": "node bin/graf.js serve"
+  },
+  "keywords": [
+    "mcp",
+    "codebase",
+    "knowledge-graph",
+    "developer-tools",
+    "sqlite",
+    "vscode"
+  ],
+  "license": "MIT",
+  "files": [
+    "bin/",
+    "src/",
+    "extension/",
+    "examples/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "IMPLEMENTATION_STATUS.md",
+    "install-windows.ps1",
+    "install-unix.sh"
+  ]
+}

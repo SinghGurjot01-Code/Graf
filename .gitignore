@@ -1,0 +1,12 @@
+node_modules/
+release/
+dist/
+runtime/win-x64/node.exe
+src/renderer/vendor/cytoscape.min.js
+*.log
+.DS_Store
+Thumbs.db
+.env
+qa-output/
+.graf/
+*.sqlite*
